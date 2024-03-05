@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Evaluation</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div v-if="currentCode">
+            <h2>Code Evaluation</h2>
+            <pre>{{ currentCode.row_code }}</pre>
+            <h3>OpenAI Result:</h3>
+            <pre>{{ currentCode.openai }}</pre>
+            <h3>Selecter Result:</h3>
+            <pre>{{ currentCode.selecter }}</pre>
+            <label>Rate the code (1-5):</label>
+            <input type="number" v-model="rating" min="1" max="5">
+            <button @click="submitRating">Submit Rating</button>
+        </div>
+        <div v-else>
+            <h2>Thank you for rating!</h2>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                codes: [], // Your JSON data here
+                currentCodeIndex: 0,
+                currentCode: null,
+                rating: 0
+            },
+            mounted() {
+                // Fetch data from your API endpoint
+                fetch('http://127.0.0.1:5000/api/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.codes = data;
+                        this.currentCode = this.codes[this.currentCodeIndex];
+                    });
+            },
+            methods: {
+                submitRating() {
+                    if (this.rating >= 1 && this.rating <= 5) {
+                        this.currentCode.key = this.rating; // Save the rating in the key field
+                        this.rating = 0; // Reset rating
+                        this.currentCodeIndex++;
+                        if (this.currentCodeIndex < this.codes.length) {
+                            this.currentCode = this.codes[this.currentCodeIndex];
+                        } else {
+                            this.currentCode = null; // No more codes to rate
+                        }
+                    } else {
+                        alert('Please rate the code between 1 and 5.');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
