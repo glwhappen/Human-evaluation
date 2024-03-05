@@ -5,22 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Evaluation</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
+    <style>
+        .code {
+            /* border: 1px red solid; */
+            /* font-size: 20px; */
+            color: rgb(230, 90, 15);
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <div v-if="currentCode">
-            <h2>Code Evaluation</h2>
-            <pre>{{ currentCode.row_code }}</pre>
-            <h3>OpenAI Result:</h3>
-            <pre>{{ currentCode.openai }}</pre>
-            <h3>Selecter Result:</h3>
-            <pre>{{ currentCode.selecter }}</pre>
-            <label>Rate the code (1-5):</label>
-            <input type="number" v-model="rating" min="1" max="5">
-            <button @click="submitRating">Submit Rating</button>
+            <h3>数量: {{currentCodeIndex}} / {{ codes.length }}</h3>
+            <h3>待补全代码</h3>
+            <pre class="code">{{ currentCode.row_code }}</pre>
+            <h3>补全结果A:</h3>
+            <pre class="code">{{ currentCode[A] }}</pre>
+
+            <label>你认为A代码的【正确性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="correctness[A]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="correctness[A]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="correctness[A]" value="3"> 3
+              </label> <br>
+            <label>你认为A代码的【可维护性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="maintainability[A]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="maintainability[A]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="maintainability[A]" value="3"> 3
+              </label> <br>
+            <label>你认为A代码的【可读性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="readability[A]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="readability[A]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="readability[A]" value="3"> 3
+              </label> <br>
+
+            <h3>补全结果B:</h3>
+            <pre class="code">{{ currentCode[B] }}</pre>
+            <label>你认为B代码的【正确性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="correctness[B]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="correctness[B]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="correctness[B]" value="3"> 3
+              </label> <br>
+            <label>你认为B代码的【可维护性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="maintainability[B]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="maintainability[B]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="maintainability[B]" value="3"> 3
+              </label> <br>
+            <label>你认为B代码的【可读性】分数 (1-3):</label>
+            <label>
+                <input type="radio" v-model="readability[B]" value="1"> 1
+              </label>
+              <label>
+                <input type="radio" v-model="readability[B]" value="2"> 2
+              </label>
+              <label>
+                <input type="radio" v-model="readability[B]" value="3"> 3
+              </label> <br>
+
+            <button @click="submitRating">提交</button>
+            <p>请从上面的两份代码中，分别给代码进行打分，打分规则如下：</p>
         </div>
         <div v-else>
             <h2>Thank you for rating!</h2>
+            <br>
+            填表结束，请复制下面的内容发送给glw，然后来换取红包，谢谢 <br>
+            <textarea rows="10" cols="50">{{JSON.stringify(result)}}</textarea>
+
         </div>
     </div>
 
@@ -31,28 +106,71 @@
                 codes: [], // Your JSON data here
                 currentCodeIndex: 0,
                 currentCode: null,
-                rating: 0
+                A: "openai",
+                B: "selecter",
+                rating: {
+                    "openai": 5,
+                    "selecter": 5
+                },
+                correctness: {
+                    "openai": null,
+                    "selecter": null
+                },
+                maintainability: {
+                    "openai": null,
+                    "selecter": null
+                },
+                readability: {
+                    "openai": null,
+                    "selecter": null
+                },
+                result: {}
             },
             mounted() {
                 // Fetch data from your API endpoint
-                fetch('http://127.0.0.1:5000/api/data')
+                fetch('http://linux.glwsq.cn:7124/api/data')
                     .then(response => response.json())
                     .then(data => {
                         this.codes = data;
                         this.currentCode = this.codes[this.currentCodeIndex];
+                        this.swap()
                     });
             },
             methods: {
+                swap() {
+                    if (Math.random() < 0.5) {
+                        [this.A, this.B] = [this.B, this.A];
+                    }
+                },
                 submitRating() {
-                    if (this.rating >= 1 && this.rating <= 5) {
-                        this.currentCode.key = this.rating; // Save the rating in the key field
-                        this.rating = 0; // Reset rating
+                    if (true) {
+                        // this.currentCode.key = this.rating; // Save the rating in the key field
+                        this.correctness = {
+                    "openai": null,
+                    "selecter": null
+                }
+                        this.maintainability = {
+                    "openai": null,
+                    "selecter": null
+                }
+                        this.readability = {
+                    "openai": null,
+                    "selecter": null
+                }
                         this.currentCodeIndex++;
                         if (this.currentCodeIndex < this.codes.length) {
                             this.currentCode = this.codes[this.currentCodeIndex];
+                            this.swap()
+                            this.result[this.currentCode.key] = {
+                                correctness: this.correctness,
+                                maintainability: this.maintainability,
+                                readability: this.readability
+                            }
+
                         } else {
                             this.currentCode = null; // No more codes to rate
                         }
+                        
                     } else {
                         alert('Please rate the code between 1 and 5.');
                     }
@@ -60,5 +178,6 @@
             }
         });
     </script>
+    
 </body>
 </html>
