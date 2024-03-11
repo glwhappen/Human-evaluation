@@ -24,14 +24,34 @@
                 <h3>数量: {{currentCodeIndex}} / {{ codes.length }}</h3>
                 <h3>待补全代码</h3>
                 <pre class="code"><code>{{ currentCode.row_code }}</code></pre>
-                <h3>参考代码{{C}}</h3>
+
+                <p style="color:rgb(239, 123, 14)">
+                    下面的代码，是上面待补全代码的下一行，请重点阅读上面代码的最后几行，然后回答下面的问题。
+                </p>
+    
+
+                <h3>参考代码C</h3>
                 <pre class="code"><code>{{ currentCode[C] }}</code></pre>
-                <h3>参考代码{{D}}</h3>
+                <h3>参考代码D</h3>
                 <pre class="code"><code>{{ currentCode[D] }}</code></pre>
             </div>
-            <h3>补全结果A:</h3>
-            <pre class="code"><code>{{ currentCode[A] }}</code></pre>
+            <hr>
 
+            <h3 style="color:rgb(120, 124, 231)">补全结果A:</h3>
+            <pre class="code"><code>{{ currentCode[A] }}</code></pre>
+            <!-- <label>【正确性】&#12288;:</label> -->
+            <p style="color:rgb(239, 123, 14)">
+                你认为补全结果A这行代码，与C、D相比较，更接近谁呢？
+            </p>
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" v-model="sim[A]" :id="`sim-A-C`" :value="C">
+                <label class="btn btn-outline-primary" :for="`sim-A-C`">与C代码相似</label>
+                <input type="radio" class="btn-check" v-model="sim[A]" :id="`sim-A-None`" :value="None">
+                <label class="btn btn-outline-primary" :for="`sim-A-None`">都不相似</label>
+                <input type="radio" class="btn-check" v-model="sim[A]" :id="`sim-A-D`" :value="D">
+                <label class="btn btn-outline-primary" :for="`sim-A-D`">与D代码相似</label>
+            </div>
+            <br>
             <!-- <label>你认为A代码的【正确性】&#12288;分数 (1-3):</label>
             <div class="btn-group" role="group">
                 <template v-for="number in [1, 2, 3]">
@@ -58,9 +78,25 @@
             </div>
             <br> -->
 
-            <h3>补全结果B:</h3>
+            <h3 style="color:rgb(120, 124, 231)">补全结果B:</h3>
             <pre class="code">{{ currentCode[B] }}</pre>
-            <label>【正确性】&#12288;:</label>
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" v-model="sim[B]" :id="`sim-B-C`" :value="C">
+                <label class="btn btn-outline-primary" :for="`sim-B-C`">与C代码相似</label>
+
+                <input type="radio" class="btn-check" v-model="sim[B]" :id="`sim-B-None`" :value="None">
+                <label class="btn btn-outline-primary" :for="`sim-B-None`">都不相似</label>
+
+                <input type="radio" class="btn-check" v-model="sim[B]" :id="`sim-B-D`" :value="D">
+                <label class="btn btn-outline-primary" :for="`sim-B-D`">与D代码相似</label>
+            </div>
+            <br>
+            <hr>
+            <p>
+                请从正确性、可维护性、可读性等你认为的代码好坏的方法中，综合考虑A和B，谁更好呢；除非你的理由很充分，否则不要选择平局
+            </p>
+
+            <label>请做出你的选择:</label>
             <div class="btn-group" role="group">
 
                 <input type="radio" class="btn-check" v-model="correctness" :id="`correctness-A`" value="1">
@@ -72,23 +108,27 @@
 
             </div>
             <br>
-            <label>你认为B代码的【可维护性】分数 (1-3):</label>
+            <!-- <label>【可维护性】:</label>
             <div class="btn-group" role="group">
-                <template v-for="number in [1, 2, 3]">
-                    <input type="radio" class="btn-check" v-model="maintainability[B]" :id="`maintainability-B-${number}`" :value="number">
-                    <label class="btn btn-outline-primary" :for="`maintainability-B-${number}`">{{number}}</label>
-                </template>
+                <input type="radio" class="btn-check" v-model="maintainability" :id="`maintainability-A`" value="1">
+                <label class="btn btn-outline-primary" :for="`maintainability-A`">A代码更好</label>
+                <input type="radio" class="btn-check" v-model="maintainability" :id="`maintainability-A-B`" value="2">
+                <label class="btn btn-outline-primary" :for="`maintainability-A-B`">平局</label>
+                <input type="radio" class="btn-check" v-model="maintainability" :id="`maintainability-B`" value="3">
+                <label class="btn btn-outline-primary" :for="`maintainability-B`">B代码更好</label>
             </div>
             <br>
 
-            <label>你认为B代码的【可读性】&#12288;分数 (1-3):</label>
+            <label>【可读性】&#12288;:</label>
             <div class="btn-group" role="group">
-                <template v-for="number in [1, 2, 3]">
-                    <input type="radio" class="btn-check" v-model="readability[B]" :id="`readability-B-${number}`" :value="number">
-                    <label class="btn btn-outline-primary" :for="`readability-B-${number}`">{{number}}</label>
-                </template>
+                <input type="radio" class="btn-check" v-model="readability" :id="`readability-A`" value="1">
+                <label class="btn btn-outline-primary" :for="`readability-A`">A代码更好</label>
+                <input type="radio" class="btn-check" v-model="readability" :id="`readability-A-B`" value="2">
+                <label class="btn btn-outline-primary" :for="`readability-A-B`">平局</label>
+                <input type="radio" class="btn-check" v-model="readability" :id="`readability-B`" value="3">
+                <label class="btn btn-outline-primary" :for="`readability-B`">B代码更好</label>
             </div>
-            <br>
+            <br> -->
 
             <button class="btn btn-primary" @click="submitRating">提交</button>
             <!-- <p>请从上面的两份代码中，分别给代码进行打分，打分规则如下：</p> -->
@@ -117,15 +157,13 @@
                     "openai": 5,
                     "selecter": 5
                 },
+                sim: {
+                    "openai": null,
+                    "selecter": null
+                },
                 correctness: null,
-                maintainability: {
-                    "openai": null,
-                    "selecter": null
-                },
-                readability: {
-                    "openai": null,
-                    "selecter": null
-                },
+                maintainability: null,
+                readability: null,
                 result: {}
             },
             mounted() {
@@ -148,43 +186,51 @@
                     }
                 },
                 submitRating() {
-                    function areAllValuesNonNull(correctness, maintainability, readability) {
+                    function areAllValuesNonNull(correctness) {
                         // 获取所有对象的值并合并到一个数组中
                         const allValues = [
-                            ...Object.values(correctness),
-                            ...Object.values(maintainability),
-                            ...Object.values(readability)
+                            ...Object.values(correctness)
                         ];
 
                         // 检查数组中的每个值是否都不为null
                         return allValues.every(value => value !== null);
                     }
-                    if (areAllValuesNonNull(this.correctness, this.maintainability, this.readability)) {
+                    if (areAllValuesNonNull(this.sim) && this.correctness) {
                         // this.currentCode.key = this.rating; // Save the rating in the key field
 
                         this.currentCodeIndex++;
-                        if (this.currentCodeIndex < this.codes.length) {
+                        if (this.currentCodeIndex <= this.codes.length) {
+
+                            this.result[this.currentCode.key] = {
+                                sim: this.sim,
+                                row: this.currentCode,
+                                correctness: {
+                                    [this.A]: this.correctness == 1 ? 1: 0,
+                                    [this.B]: this.correctness == 3 ? 1: 0,
+                                },
+                                // maintainability: {
+                                //     [this.A]: this.maintainability == 1 ? 1: 0,
+                                //     [this.B]: this.maintainability == 3 ? 1: 0,
+                                // },
+                                // readability: {
+                                //     [this.A]: this.maintainability == 1 ? 1: 0,
+                                //     [this.B]: this.maintainability == 3 ? 1: 0,
+                                // },
+                            }
+
+                            console.log(this.result)
                             this.currentCode = this.codes[this.currentCodeIndex];
                             this.swap()
-                            this.result[this.currentCode.key] = {
-                                correctness: this.correctness,
-                                maintainability: this.maintainability,
-                                readability: this.readability
-                            }
-                            this.correctness = {
-                                "openai": null,
-                                "selecter": null
-                            }
-                                    this.maintainability = {
-                                "openai": null,
-                                "selecter": null
-                            }
-                                    this.readability = {
+                            this.correctness = null
+                            // this.maintainability = null
+                            // this.readability = null
+                            this.sim = {
                                 "openai": null,
                                 "selecter": null
                             }
 
                         } else {
+                            console.log("a")
                             this.currentCode = null; // No more codes to rate
                         }
                         
